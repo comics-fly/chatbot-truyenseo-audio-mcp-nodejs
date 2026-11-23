@@ -43,8 +43,8 @@ jobs:
       - name: Build bundle
         run: npm run build
 
-      # 6. Publish package lên NPM với provenance
+      # 6. Publish package lên NPM
       - name: Publish lên NPM
-        run: npm publish --access public --provenance
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
