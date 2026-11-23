@@ -28,8 +28,8 @@ test('McpApiClient xử lý URL, array params và format lỗi kết nối chu�
 
   assert.equal(res.status, 'error');
   assert.equal(res.error_code, 'CLIENT_NETWORK_ERROR');
-  assert.match(res.message || '', /Ti%C3%AAn\+hi%E1%BB%87p/);
-  assert.match(res.message || '', /fields=id%2Ctitle/);
+  // Message chung không leak URL/tham số người dùng; chi tiết log ở server-side.
+  assert.equal(res.message, 'Lỗi kết nối tới Laravel API');
 });
 
 test('Đăng ký đầy đủ 15 công cụ chatbot tư vấn truyện', () => {

@@ -5,6 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { apiClient } from '../client.js';
+import { toMcpResult } from '../mcp-result.js';
 
 export function registerChapterTools(server: McpServer): void {
   // 1. Chapter mới ra
@@ -19,9 +20,7 @@ export function registerChapterTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/chapters/new', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 }

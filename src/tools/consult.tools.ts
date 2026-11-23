@@ -5,6 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { apiClient } from '../client.js';
+import { toMcpResult } from '../mcp-result.js';
 
 export function registerConsultTools(server: McpServer): void {
   // 1. Tư vấn thông minh tổng hợp
@@ -26,9 +27,7 @@ export function registerConsultTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.post('chatbot/consult', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -39,9 +38,7 @@ export function registerConsultTools(server: McpServer): void {
     {},
     async () => {
       const res = await apiClient.get('chatbot/categories');
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 }

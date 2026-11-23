@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "truyen-audio": {
+      "command": "npx",
+      "args": ["-y", "truyen-audio-chatbot-mcp@1.0.0"],
+      "env": {
+        "TRUYEN_AUDIO_API_URL": "https://truyenseo.com"
+      }
+    }
+  }
+}

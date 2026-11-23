@@ -5,6 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { apiClient } from '../client.js';
+import { toMcpResult } from '../mcp-result.js';
 
 export function registerRecommendTools(server: McpServer): void {
   // 1. Gợi ý theo độ dài
@@ -20,9 +21,7 @@ export function registerRecommendTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/recommend/by-length', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -39,9 +38,7 @@ export function registerRecommendTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/recommend/by-mood', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -58,9 +55,7 @@ export function registerRecommendTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/recommend/audio-picks', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 }

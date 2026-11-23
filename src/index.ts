@@ -16,6 +16,8 @@ import { registerStoryTools } from './tools/story.tools.js';
 import { registerChapterTools } from './tools/chapter.tools.js';
 import { registerRecommendTools } from './tools/recommend.tools.js';
 import { registerConsultTools } from './tools/consult.tools.js';
+import { validateConfig } from './config.js';
+import { toMcpResult } from './mcp-result.js';
 
 // Khởi tạo máy chủ MCP
 const server = new McpServer({
@@ -30,9 +32,7 @@ server.tool(
   {},
   async () => {
     const res = await apiClient.get<{ status: string; service: string; version: string }>('info');
-    return {
-      content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-    };
+    return toMcpResult(res);
   }
 );
 
@@ -43,6 +43,8 @@ registerRecommendTools(server);
 registerConsultTools(server);
 
 // ponytail: stdio transport là chuẩn kết nối MCP cho AI agent cục bộ, nâng cấp SSE khi cần deploy remote
+validateConfig();
+
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);

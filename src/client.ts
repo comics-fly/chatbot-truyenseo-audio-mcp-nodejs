@@ -4,6 +4,10 @@
 import { config } from './config.js';
 import type { ApiResponse } from './types.js';
 
+const DEFAULT_TIMEOUT_MS = 15_000;
+const MAX_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 200;
+
 export class McpApiClient {
   private readonly baseUrl: string;
   private readonly token: string;
@@ -16,17 +20,54 @@ export class McpApiClient {
   /**
    * Tạo headers chung cho request
    */
-  private getHeaders(): HeadersInit {
+  private getHeaders(): Readonly<Record<string, string>> {
     const headers: Record<string, string> = {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     };
 
     if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers.Authorization = `Bearer ${this.token}`;
     }
 
     return headers;
+  }
+
+  /**
+   * Gọi fetch có timeout (AbortController) và retry nhẹ cho lỗi mạng/5xx.
+   */
+  private async fetchWithRetry(
+    url: string,
+    init: RequestInit
+  ): Promise<Response> {
+    let lastError: unknown = null;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+      try {
+        const response = await fetch(url, { ...init, signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        // Retry cho 5xx (server transient), không retry 4xx
+        if (response.status >= 500 && response.status <= 599 && attempt < MAX_RETRIES - 1) {
+          await this.delay(RETRY_BASE_DELAY_MS * 2 ** attempt);
+          continue;
+        }
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        lastError = error;
+        if (attempt < MAX_RETRIES - 1) {
+          await this.delay(RETRY_BASE_DELAY_MS * 2 ** attempt);
+          continue;
+        }
+      }
+    }
+    throw lastError instanceof Error ? lastError : new Error('Unknown network error');
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -58,7 +99,7 @@ export class McpApiClient {
     }
 
     try {
-      const response = await fetch(url, {
+      const response = await this.fetchWithRetry(url, {
         method,
         headers: this.getHeaders(),
         body: body ? JSON.stringify(body) : undefined,
@@ -68,24 +109,63 @@ export class McpApiClient {
         return {
           status: 'success',
           success: true,
-          data: undefined as unknown as T,
+          data: undefined as T,
         };
       }
 
       const text = await response.text();
-      const json = text ? (JSON.parse(text) as ApiResponse<T>) : ({ status: 'success', success: true } as ApiResponse<T>);
+      if (!text) {
+        return {
+          status: response.ok ? 'success' : 'error',
+          success: response.ok,
+          data: undefined as T,
+        };
+      }
+
+      let json: ApiResponse<T>;
+      try {
+        json = JSON.parse(text) as ApiResponse<T>;
+      } catch {
+        throw new Error(
+          `Phản hồi từ Laravel API không phải JSON hợp lệ (HTTP ${response.status}).`
+        );
+      }
+
+      // Nếu backend trả lỗi HTTP, đánh dấu rõ ràng
+      if (!response.ok && json.status !== 'error') {
+        json = {
+          ...json,
+          status: 'error',
+          success: false,
+          message: json.message ?? `HTTP ${response.status}`,
+        };
+      }
       return json;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown network error';
+      // Chỉ trả message chung cho client, không leak toàn URL.
+      // Chi tiết URL được log ra stderr cho debugging server-side.
+      console.error(`[McpApiClient] Lỗi khi gọi ${this.safeUrlForLog(url)}: ${message}`);
       return {
         status: 'error',
         error_code: 'CLIENT_NETWORK_ERROR',
-        message: `Lỗi kết nối tới Laravel API (${url}): ${message}`,
+        message: 'Lỗi kết nối tới Laravel API',
       };
     }
   }
 
-  // Tiện ích HTTP cơ bản
+  /**
+   * Trả URL đã loại bỏ query string để log an toàn (không leak tham số người dùng).
+   */
+  private safeUrlForLog(url: string): string {
+    try {
+      const parsed = new URL(url);
+      return `${parsed.origin}${parsed.pathname}`;
+    } catch {
+      return url.split('?')[0];
+    }
+  }
+
   get<T>(endpoint: string, queryParams?: Record<string, string | number | boolean | readonly (string | number)[] | undefined>) {
     return this.request<T>('GET', endpoint, undefined, queryParams);
   }
@@ -119,5 +199,4 @@ export class McpApiClient {
   }
 }
 
-// Singleton client dùng chung
 export const apiClient = new McpApiClient();

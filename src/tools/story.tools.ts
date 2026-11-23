@@ -5,6 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { apiClient } from '../client.js';
+import { toMcpResult } from '../mcp-result.js';
 
 export function registerStoryTools(server: McpServer): void {
   // 1. Truyện mới ra mắt
@@ -20,9 +21,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/new', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -38,9 +37,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/recently-updated', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -56,9 +53,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/top-likes', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -74,9 +69,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/top-views', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -92,9 +85,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/top-comments', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -110,9 +101,7 @@ export function registerStoryTools(server: McpServer): void {
     },
     async (params) => {
       const res = await apiClient.get('chatbot/stories/completed', params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -121,15 +110,13 @@ export function registerStoryTools(server: McpServer): void {
     'story_similar',
     'Tìm các truyện tương tự với một truyện đang xem (theo thể loại và độ phổ biến).',
     {
-      id: z.union([z.number().int().positive(), z.string().min(1)]).describe('ID hoặc slug của truyện gốc'),
+      id: z.union([z.number().int().positive(), z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang')]).describe('ID hoặc slug của truyện gốc'),
       limit: z.number().int().min(1).max(50).optional().describe('Số lượng gợi ý (mặc định 5, tối đa 50)'),
       fields: z.union([z.string(), z.array(z.string())]).optional().describe('Sparse fieldsets'),
     },
     async ({ id, ...params }) => {
       const res = await apiClient.get(`chatbot/stories/${id}/similar`, params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -138,14 +125,12 @@ export function registerStoryTools(server: McpServer): void {
     'story_context_card',
     'Lấy thẻ tóm tắt ngữ cảnh truyện (bối cảnh, tác giả, thống kê, pitch tư vấn) cho chatbot.',
     {
-      id: z.union([z.number().int().positive(), z.string().min(1)]).describe('ID hoặc slug của truyện'),
+      id: z.union([z.number().int().positive(), z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang')]).describe('ID hoặc slug của truyện'),
       fields: z.union([z.string(), z.array(z.string())]).optional().describe('Sparse fieldsets'),
     },
     async ({ id, ...params }) => {
       const res = await apiClient.get(`chatbot/stories/${id}/context-card`, params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 
@@ -154,14 +139,12 @@ export function registerStoryTools(server: McpServer): void {
     'story_release_pace',
     'Phân tích tần suất và lịch ra chương của truyện để chatbot trả lời độc giả.',
     {
-      id: z.union([z.number().int().positive(), z.string().min(1)]).describe('ID hoặc slug của truyện'),
+      id: z.union([z.number().int().positive(), z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang')]).describe('ID hoặc slug của truyện'),
       fields: z.union([z.string(), z.array(z.string())]).optional().describe('Sparse fieldsets'),
     },
     async ({ id, ...params }) => {
       const res = await apiClient.get(`chatbot/stories/${id}/release-pace`, params);
-      return {
-        content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-      };
+    return toMcpResult(res);
     }
   );
 }
