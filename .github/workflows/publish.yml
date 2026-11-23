@@ -1,0 +1,50 @@
+# Quy trình tự động build và publish package lên NPM Registry
+name: Publish to NPM
+
+# Kích hoạt workflow
+on:
+  # Tự động chạy khi publish một GitHub Release
+  release:
+    types: [published]
+  # Hỗ trợ chạy thủ công từ giao diện GitHub Actions
+  workflow_dispatch:
+
+# Phân quyền cho workflow
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-npm:
+    name: Build và Publish lên NPM
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Lấy mã nguồn mới nhất từ repository
+      - name: Checkout mã nguồn
+        uses: actions/checkout@v4
+
+      # 2. Thiết lập Node.js 20 và registry npm
+      - name: Thiết lập Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      # 3. Cài đặt dependencies
+      - name: Cài đặt dependencies
+        run: npm install
+
+      # 4. Chạy test suite để đảm bảo chất lượng
+      - name: Chạy kiểm thử
+        run: npm test
+
+      # 5. Đóng gói bundle bằng esbuild
+      - name: Build bundle
+        run: npm run build
+
+      # 6. Publish package lên NPM với provenance
+      - name: Publish lên NPM
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
