@@ -43,6 +43,7 @@ export type FieldsParam = string | readonly string[];
 // -------------------------------------------------------------
 export type ChatbotStoryCriteria =
   | 'new_stories'
+  | 'new_chapters'
   | 'top_likes'
   | 'top_views'
   | 'top_comments'
@@ -114,10 +115,6 @@ export interface ChatbotStorySummary {
     readonly comments_count: number;
     readonly chapters_count: number;
   };
-  readonly views: number;
-  readonly likes: number;
-  readonly comments_count: number;
-  readonly chapters_count: number;
   readonly is_featured: boolean;
   readonly description?: string | null;
   readonly url: string;

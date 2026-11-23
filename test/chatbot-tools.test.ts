@@ -19,7 +19,7 @@ test('Cấu hình mặc định của MCP Server', () => {
 });
 
 test('McpApiClient xử lý URL, array params và format lỗi kết nối chuẩn xác', async () => {
-  const client = new McpApiClient('http://test-server.local:8000/mcp/', 'fake-token');
+  const client = new McpApiClient('http://test-server.local:8000/chatbot/', 'fake-token');
   const res = await client.get('chatbot/stories/new', {
     search: 'Tiên hiệp',
     page: 2,

@@ -79,7 +79,11 @@ export class McpApiClient {
     body?: unknown,
     queryParams?: Record<string, string | number | boolean | readonly (string | number)[] | undefined>
   ): Promise<ApiResponse<T>> {
-    let url = `${this.baseUrl}/${endpoint.replace(/^\/+/, '')}`;
+    let cleanEndpoint = endpoint.replace(/^\/+/, '');
+    if (this.baseUrl.endsWith('/chatbot') && cleanEndpoint.startsWith('chatbot/')) {
+      cleanEndpoint = cleanEndpoint.slice('chatbot/'.length);
+    }
+    let url = `${this.baseUrl}/${cleanEndpoint}`;
 
     if (queryParams) {
       const searchParams = new URLSearchParams();
