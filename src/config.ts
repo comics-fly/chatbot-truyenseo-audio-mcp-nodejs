@@ -23,7 +23,7 @@ function readEnv(name: string, fallback?: string): string {
 }
 
 export const config: AppConfig = {
-  apiUrl: readEnv('TRUYEN_AUDIO_API_URL', 'http://localhost:8000/chatbot'),
+  apiUrl: readEnv('TRUYEN_AUDIO_API_URL', 'https://truyenseo.com/chatbot'),
   apiToken: readEnv('TRUYEN_AUDIO_API_TOKEN'),
   serverName: 'truyen-audio-mcp',
   serverVersion: '1.2.0',
