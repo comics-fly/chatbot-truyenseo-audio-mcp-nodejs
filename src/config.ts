@@ -24,7 +24,7 @@ function readEnv(name: string, fallback?: string): string {
 export const config: AppConfig = {
   apiUrl: readEnv('TRUYEN_AUDIO_API_URL', 'https://truyenseo.com/chatbot'),
   serverName: 'truyen-audio-mcp',
-  serverVersion: '1.2.1',
+  serverVersion: '1.2.2',
 };
 
 /**
