@@ -14,12 +14,12 @@ import { McpApiClient } from '../src/client.js';
 
 test('Cấu hình mặc định của MCP Server', () => {
   assert.equal(config.serverName, 'truyen-audio-mcp');
-  assert.equal(config.serverVersion, '1.2.0');
+  assert.equal(config.serverVersion, '1.2.1');
   assert.ok(config.apiUrl.length > 0);
 });
 
 test('McpApiClient xử lý URL, array params và format lỗi kết nối chuẩn xác', async () => {
-  const client = new McpApiClient('http://test-server.local:8000/chatbot/', 'fake-token');
+  const client = new McpApiClient('http://test-server.local:8000/chatbot/');
   const res = await client.get('chatbot/stories/new', {
     search: 'Tiên hiệp',
     page: 2,

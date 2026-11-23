@@ -1,12 +1,11 @@
 /**
  * Cấu hình môi trường cho MCP Server
  *
- * Token API được đọc từ env. Nếu thiếu, ném lỗi rõ ràng tại khởi động (fail-fast)
- * thay vì để request đi không xác thực silently.
+ * MCP chatbot không yêu cầu xác thực API token, do chỉ cần cấu hình apiUrl.
+ * Nếu thiếu url, ném lỗi rõ ràng tại khởi động (fail-fast).
  */
 export interface AppConfig {
   readonly apiUrl: string;
-  readonly apiToken: string;
   readonly serverName: string;
   readonly serverVersion: string;
 }
@@ -24,21 +23,15 @@ function readEnv(name: string, fallback?: string): string {
 
 export const config: AppConfig = {
   apiUrl: readEnv('TRUYEN_AUDIO_API_URL', 'https://truyenseo.com/chatbot'),
-  apiToken: readEnv('TRUYEN_AUDIO_API_TOKEN'),
   serverName: 'truyen-audio-mcp',
-  serverVersion: '1.2.0',
+  serverVersion: '1.2.1',
 };
 
 /**
  * Kiểm tra cấu hình bắt buộc khi khởi động MCP Server.
- * @throws Error nếu thiếu token API hoặc apiUrl không hợp lệ.
+ * @throws Error nếu apiUrl không hợp lệ.
  */
 export function validateConfig(): void {
-  if (!config.apiToken) {
-    throw new Error(
-      'TRUYEN_AUDIO_API_TOKEN không được để trống. Vui lòng cấu hình biến môi trường trước khi khởi động MCP Server.'
-    );
-  }
   if (!config.apiUrl) {
     throw new Error('TRUYEN_AUDIO_API_URL không được để trống.');
   }

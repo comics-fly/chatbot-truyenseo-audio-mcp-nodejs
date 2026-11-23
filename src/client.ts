@@ -10,11 +10,9 @@ const RETRY_BASE_DELAY_MS = 200;
 
 export class McpApiClient {
   private readonly baseUrl: string;
-  private readonly token: string;
 
-  constructor(baseUrl: string = config.apiUrl, token: string = config.apiToken) {
+  constructor(baseUrl: string = config.apiUrl) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
-    this.token = token;
   }
 
   /**
@@ -25,10 +23,6 @@ export class McpApiClient {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
-
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
 
     return headers;
   }

@@ -68,7 +68,6 @@ Kết quả tạo ra đúng **1 file duy nhất** tại [dist/index.js](dist/ind
 Tạo file `.env` từ [.env.example](.env.example):
 ```env
 TRUYEN_AUDIO_API_URL=http://localhost:8000/chatbot
-TRUYEN_AUDIO_API_TOKEN=your_mcp_bearer_token_here
 ```
 
 ### 2. Cách 1: Sử dụng trực tiếp qua NPM với `npx` (Khuyên dùng)
@@ -86,7 +85,6 @@ Cấu hình client chạy trực tiếp mà **không cần clone mã nguồn hay
       ],
       "env": {
         "TRUYEN_AUDIO_API_URL": "http://localhost:8000/chatbot",
-        "TRUYEN_AUDIO_API_TOKEN": "your_mcp_bearer_token_here"
       }
     }
   }
@@ -102,7 +100,6 @@ Cấu hình client chạy trực tiếp mà **không cần clone mã nguồn hay
       "args": ["-y", "truyen-audio-chatbot-mcp@1.2.0"],
       "env": {
         "TRUYEN_AUDIO_API_URL": "http://localhost:8000/chatbot",
-        "TRUYEN_AUDIO_API_TOKEN": "your_mcp_bearer_token_here"
       }
     }
   }
@@ -120,7 +117,6 @@ Nếu bạn đang phát triển hoặc muốn chạy trực tiếp file bundle s
       "args": ["dist/index.js"],
       "env": {
         "TRUYEN_AUDIO_API_URL": "http://localhost:8000/chatbot",
-        "TRUYEN_AUDIO_API_TOKEN": "your_mcp_bearer_token_here"
       }
     }
   }
