@@ -14,7 +14,7 @@ import { McpApiClient } from '../src/client.js';
 
 test('Cấu hình mặc định của MCP Server', () => {
   assert.equal(config.serverName, 'truyen-audio-mcp');
-  assert.equal(config.serverVersion, '1.0.0');
+  assert.equal(config.serverVersion, '1.2.0');
   assert.ok(config.apiUrl.length > 0);
 });
 

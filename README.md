@@ -82,7 +82,7 @@ Cấu hình client chạy trực tiếp mà **không cần clone mã nguồn hay
       "command": "npx",
       "args": [
         "-y",
-        "truyen-audio-chatbot-mcp@1.0.0"
+        "truyen-audio-chatbot-mcp@1.2.0"
       ],
       "env": {
         "TRUYEN_AUDIO_API_URL": "http://localhost:8000/chatbot",
@@ -99,7 +99,7 @@ Cấu hình client chạy trực tiếp mà **không cần clone mã nguồn hay
   "mcpServers": {
     "truyen-audio-chatbot": {
       "command": "npx",
-      "args": ["-y", "truyen-audio-chatbot-mcp@1.0.0"],
+      "args": ["-y", "truyen-audio-chatbot-mcp@1.2.0"],
       "env": {
         "TRUYEN_AUDIO_API_URL": "http://localhost:8000/chatbot",
         "TRUYEN_AUDIO_API_TOKEN": "your_mcp_bearer_token_here"

@@ -1,6 +1,6 @@
 {
   "name": "truyen-audio-chatbot-mcp",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "MCP Server tư vấn và gợi ý truyện cho Chatbot AI (endpoint /chatbot/* backend Laravel)",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
